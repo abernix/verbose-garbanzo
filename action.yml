@@ -1,11 +1,17 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: Apollo GitHub Projects Beta Labeler
+description: Sets the project by default on new issues
+author: Jesse Rosenberger
 inputs:
-  milliseconds: # change this
+  organization:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: The GitHub Organization login
+  project_id:
+    required: true
+    description: The GitHub Projects beta number (not ID)
+  field_option_values:
+    required: false
+    description: List of field_id::option_value_id pairs
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

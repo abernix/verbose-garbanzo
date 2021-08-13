@@ -21,4 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          milliseconds: 1000
+          organization: apollographql
+          project_id: 18
+          field_option_values: |2
+            J3sse==::123
