@@ -7,8 +7,8 @@ test('test runs', () => {
   process.env['GITHUB_REPOSITORY'] = 'apollographql/router'
   process.env['INPUT_PROJECT_ID'] = '18'
   process.env['INPUT_FIELD_OPTION_VALUES'] = `
-    J3sse==::234
-    another10::123==
+    MDE2OlByb2plY3ROZXh0RmllbGQxODU1Nw==::404d8c00
+    MDE2OlByb2plY3ROZXh0RmllbGQxODU2MQ==::36b20fc7
   `;
   // process.env['INPUT_ORGANIZATION'] = 'org'
   const np = process.execPath

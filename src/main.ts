@@ -44,6 +44,20 @@ interface GitHubGraphqlMetadata {
   } | null
 }
 
+interface ProjectNextItem {
+  projectNextItem: {
+    id?: string | null
+  } | null
+}
+
+interface GitHubGraphqlUpdateProjectNextItemField {
+  updateProjectNextItemField: ProjectNextItem | null
+}
+
+interface GitHubGraphqlAddProjectNextItem {
+  updateProjectNextItemField: ProjectNextItem | null
+}
+
 interface GitHubMetadata {
   issueOrPullId: string
   projectNodeId: string
@@ -60,6 +74,114 @@ interface GitHubFields {
     name_html: string
   }
 }
+
+async function addProjectNextItem({
+  projectNodeId,
+  contentId,
+}: {
+  projectNodeId: string
+  /**
+   * The GitHub ID for the PR or Issue
+   */
+  contentId: string
+}): Promise<void> {
+  const result: GitHubGraphqlUpdateProjectNextItemField = await octokit.graphql(
+    `
+    mutation AddProjectNextItem (
+      $projectNodeId: String!
+      $contentId: String!
+    ) {
+      addProjectNextItem(
+        input: {
+          projectId: $projectNodeId
+          contentId: $contentId
+        }
+      ) {
+        projectNextItem {
+          id
+        }
+      }
+
+    }
+  `,
+    {
+      projectNodeId,
+      fieldId,
+      itemId,
+      optionValueId,
+      headers: {
+        'GraphQL-Features': 'projects_next_graphql'
+      }
+    }
+  )
+
+  if (
+    typeof result?.updateProjectNextItemField?.projectNextItem?.id !== "string"
+  ) {
+    throw new Error('missing expected information')
+  }
+
+  console.log(result);
+
+}
+
+
+
+async function updateProjectNextItemField({
+  projectNodeId,
+  itemId,
+  fieldId,
+  optionValueId
+}: {
+  projectNodeId: string
+  fieldId: string
+  itemId: string
+  optionValueId: string
+}): Promise<void> {
+  const result: GitHubGraphqlUpdateProjectNextItemField = await octokit.graphql(
+    `
+    mutation UpdateProjectItemField(
+      $projectNodeId: String!
+      $fieldId: String!
+      $itemId: String!
+      $optionValueId: String!
+    ) {
+      updateProjectNextItemField(
+        input: {
+          projectId: $projectNodeId
+          itemId: $itemId
+          fieldId: $fieldId
+          value: $optionValueId
+        }
+      ) {
+        projectNextItem {
+          id
+        }
+      }
+
+    }
+  `,
+    {
+      projectNodeId,
+      fieldId,
+      itemId,
+      optionValueId,
+      headers: {
+        'GraphQL-Features': 'projects_next_graphql'
+      }
+    }
+  )
+
+  if (
+    typeof result?.updateProjectNextItemField?.projectNextItem?.id !== "string"
+  ) {
+    throw new Error('missing expected information')
+  }
+
+  console.log(result);
+
+}
+
 
 async function getMetadata({
   projectOwner,
@@ -175,11 +297,21 @@ async function run(): Promise<void> {
     core.debug(`Working ${organization}'s project ${projectId}`)
     // core.debug(JSON.stringify(metadata))
 
-    for (const match of fieldOptionValues.matchAll(/^\s*(?<fieldId>[A-Za-z0-9=]+)::(?<optionValueId>[A-Za-z0-9=]+)\s*$/gm)) {
+
+    for (const match of fieldOptionValues.matchAll(/^\s*(?<fieldId>[A-Za-z0-9=]+)::(?<optionValueId>[A-Fa-f0-9]+)\s*$/gm)) {
       if (match && match.groups?.fieldId && match.groups?.optionValueId) {
         console.log(match.groups);
+      } else {
+        throw new Error("malformed line");
       }
     }
+
+    updateProjectNextItemField({
+      projectNodeId: "MDExOlByb2plY3ROZXh0MjIxNw==",
+      itemId: "MDE1OlByb2plY3ROZXh0SXRlbTczNzUz",
+      fieldId: "MDE2OlByb2plY3ROZXh0RmllbGQxODU1Nw==",
+      optionValueId: "404d8c00",
+    });
 
     // core.setOutput('time', new Date().toTimeString())
   } catch (error) {
