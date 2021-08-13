@@ -152,7 +152,10 @@ async function getMetadata({
 
 async function run(): Promise<void> {
   try {
-    const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || "" ).split('/', 1);
+    // console.log(process.env);
+    const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || "" ).split('/', 2);
+    console.log("ENVORG", envOrg);ddd
+    console.log("ENVREPO", envRepo);
 
     if (!envOrg || !envRepo) {
       throw new Error("Must set GITHUB_REPOSITORY in env as 'org/repo'.");
