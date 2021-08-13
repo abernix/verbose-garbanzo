@@ -62,19 +62,21 @@ interface GitHubFields {
 }
 
 async function getMetadata({
-  owner,
+  projectOwner,
+  issueOwner,
   repo,
   projectId
 }: {
-  owner: string
+  projectOwner: string
+  issueOwner: string
   repo: string
   projectId: number
 }): Promise<GitHubMetadata> {
   const result: GitHubGraphqlMetadata = await octokit.graphql(
     `
-    query GetMetadata($owner: String!, $repo: String!, $projectId: Int!) {
+    query GetMetadata($projectOwner: String!, $issueOwner: String!, $repo: String!, $projectId: Int!) {
       ## Get the Issue or Pull Request ID
-      repository(owner: $owner, name: $repo) {
+      repository(owner: $issueOwner, name: $repo) {
         issueOrPullRequest(number: 96) {
           ... on Issue {
             id
@@ -87,7 +89,7 @@ async function getMetadata({
       }
 
       ## Get the Project attributes for our Polaris board
-      organization(login: $owner) {
+      organization(login: $projectOwner) {
         projectNext(number: $projectId) {
           id
           fields(first: 100) {
@@ -102,7 +104,8 @@ async function getMetadata({
     }
   `,
     {
-      owner,
+      projectOwner,
+      issueOwner,
       repo,
       projectId,
       headers: {
@@ -149,24 +152,30 @@ async function getMetadata({
 
 async function run(): Promise<void> {
   try {
-    const organization: string = core.getInput('organization')
+    const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || "" ).split('/', 1);
+
+    if (!envOrg || !envRepo) {
+      throw new Error("Must set GITHUB_REPOSITORY in env as 'org/repo'.");
+    }
+
+    const organization: string = envOrg || core.getInput('organization')
     const projectId = Number(core.getInput('project_id'))
     const fieldOptionValues: string = core.getInput('field_option_values')
     validateInput({organization, projectId})
 
     const metadata = await getMetadata({
-      owner: 'apollographql',
-      repo: 'router',
+      projectOwner: organization,
+      issueOwner: envOrg,
+      repo: envRepo,
       projectId
     })
 
     // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
     core.debug(`Working ${organization}'s project ${projectId}`)
     // core.debug(JSON.stringify(metadata))
-    core.debug(fieldOptionValues)
 
-    for (const match of fieldOptionValues.matchAll(/^\s+(?<key>[A-Za-z0-9=]+)::/gm)) {
-      if (match) {
+    for (const match of fieldOptionValues.matchAll(/^\s*(?<fieldId>[A-Za-z0-9=]+)::(?<optionValueId>[A-Za-z0-9=]+)\s*$/gm)) {
+      if (match && match.groups?.fieldId && match.groups?.optionValueId) {
         console.log(match.groups);
       }
     }

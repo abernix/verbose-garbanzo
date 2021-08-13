@@ -3,8 +3,7 @@ description: Sets the project by default on new issues
 author: Jesse Rosenberger
 inputs:
   organization:
-    required: true
-    description: The GitHub Organization login
+    description: The GitHub Organization login.  Defaults to current/same.
   project_id:
     required: true
     description: The GitHub Projects beta number (not ID)
