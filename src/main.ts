@@ -154,8 +154,6 @@ async function run(): Promise<void> {
   try {
     // console.log(process.env);
     const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || "" ).split('/', 2);
-    console.log("ENVORG", envOrg);ddd
-    console.log("ENVREPO", envRepo);
 
     if (!envOrg || !envRepo) {
       throw new Error("Must set GITHUB_REPOSITORY in env as 'org/repo'.");
