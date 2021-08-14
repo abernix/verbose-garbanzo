@@ -55,7 +55,11 @@ interface GitHubGraphqlUpdateProjectNextItemField {
 }
 
 interface GitHubGraphqlAddProjectNextItem {
-  updateProjectNextItemField: ProjectNextItem | null
+  addProjectNextItem: ProjectNextItem | null
+}
+
+interface GitHubProjectNextItem {
+  id: string
 }
 
 interface GitHubMetadata {
@@ -84,8 +88,8 @@ async function addProjectNextItem({
    * The GitHub ID for the PR or Issue
    */
   contentId: string
-}): Promise<void> {
-  const result: GitHubGraphqlUpdateProjectNextItemField = await octokit.graphql(
+}): Promise<GitHubProjectNextItem> {
+  const result: GitHubGraphqlAddProjectNextItem = await octokit.graphql(
     `
     mutation AddProjectNextItem (
       $projectNodeId: String!
@@ -106,9 +110,7 @@ async function addProjectNextItem({
   `,
     {
       projectNodeId,
-      fieldId,
-      itemId,
-      optionValueId,
+      contentId,
       headers: {
         'GraphQL-Features': 'projects_next_graphql'
       }
@@ -116,12 +118,14 @@ async function addProjectNextItem({
   )
 
   if (
-    typeof result?.updateProjectNextItemField?.projectNextItem?.id !== "string"
+    typeof result?.addProjectNextItem?.projectNextItem?.id !== "string"
   ) {
-    throw new Error('missing expected information')
+    throw new Error('missing expected info in addProjectNextItem')
   }
 
-  console.log(result);
+  return {
+    id: result.addProjectNextItem.projectNextItem.id,
+  }
 
 }
 
@@ -137,7 +141,7 @@ async function updateProjectNextItemField({
   fieldId: string
   itemId: string
   optionValueId: string
-}): Promise<void> {
+}): Promise<GitHubProjectNextItem> {
   const result: GitHubGraphqlUpdateProjectNextItemField = await octokit.graphql(
     `
     mutation UpdateProjectItemField(
@@ -175,11 +179,12 @@ async function updateProjectNextItemField({
   if (
     typeof result?.updateProjectNextItemField?.projectNextItem?.id !== "string"
   ) {
-    throw new Error('missing expected information')
+    throw new Error('missing expected info in updateProjectNextItemField')
   }
 
-  console.log(result);
-
+  return {
+    id: result.updateProjectNextItemField.projectNextItem.id,
+  }
 }
 
 
@@ -240,7 +245,7 @@ async function getMetadata({
     typeof result?.organization?.projectNext?.id !== 'string' ||
     typeof result.repository?.issueOrPullRequest?.id !== 'string'
   ) {
-    throw new Error('missing expected information')
+    throw new Error('missing expected info in getMetadata')
   }
 
   const fields: GitHubFields[] = result.organization.projectNext.fields.nodes.map(
@@ -295,22 +300,29 @@ async function run(): Promise<void> {
 
     // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
     core.debug(`Working ${organization}'s project ${projectId}`)
-    // core.debug(JSON.stringify(metadata))
 
-
+    const fieldOptionValuesMap = new Map<string, string>();
     for (const match of fieldOptionValues.matchAll(/^\s*(?<fieldId>[A-Za-z0-9=]+)::(?<optionValueId>[A-Fa-f0-9]+)\s*$/gm)) {
       if (match && match.groups?.fieldId && match.groups?.optionValueId) {
-        console.log(match.groups);
+        fieldOptionValuesMap.set(match.groups.fieldId, match.groups.optionValueId)
       } else {
         throw new Error("malformed line");
       }
     }
 
-    updateProjectNextItemField({
-      projectNodeId: "MDExOlByb2plY3ROZXh0MjIxNw==",
-      itemId: "MDE1OlByb2plY3ROZXh0SXRlbTczNzUz",
-      fieldId: "MDE2OlByb2plY3ROZXh0RmllbGQxODU1Nw==",
-      optionValueId: "404d8c00",
+
+    const item = await addProjectNextItem({
+      projectNodeId: metadata.projectNodeId,
+      contentId: metadata.issueOrPullId,
+    });
+
+    fieldOptionValuesMap.forEach(async (optionValueId, fieldId) => {
+      await updateProjectNextItemField({
+        projectNodeId: metadata.projectNodeId,
+        itemId: item.id,
+        fieldId,
+        optionValueId,
+      });
     });
 
     // core.setOutput('time', new Date().toTimeString())
