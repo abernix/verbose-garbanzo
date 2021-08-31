@@ -39,18 +39,15 @@ function validateInput({ organization, bearerToken }) {
     assert_1.default.ok(typeof bearerToken === 'string' && bearerToken, 'bearer_token must be set');
 }
 async function run() {
-    var _a;
     try {
-        const context = github.context;
-        const payload = github.context.payload;
-        core.info(`This org is ${(_a = payload.organization) === null || _a === void 0 ? void 0 : _a.login}`);
-        core.info(`This repo is ${payload.repository.name}`);
-        core.info(`This issue URL is ${payload.issue.url}`);
-        core.info(JSON.stringify({ context, payload }));
-        if (github.context.eventName !== 'issue' ||
-            github.context.action !== 'opened') {
+        if (github.context.eventName !== 'issues' ||
+            github.context.payload.action !== 'opened') {
             throw new Error('Unsupported event!');
         }
+        const payload = github.context.payload;
+        core.info(`This repo is ${payload.repository.name}`);
+        core.info(`This issue URL is https://github.com/${payload.issue.html_url}`);
+        core.info(JSON.stringify({ payload }));
         const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || '').split('/', 2);
         if (!envOrg || !envRepo) {
             throw new Error("Must set GITHUB_REPOSITORY in env as 'org/repo'.");

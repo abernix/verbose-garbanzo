@@ -21,18 +21,17 @@ function validateInput({organization, bearerToken}: MainInputs): void {
 
 async function run(): Promise<void> {
   try {
-    const context = github.context;
-    const payload = github.context.payload as IssuesOpenedEvent
-    core.info(`This org is ${payload.organization?.login}`)
-    core.info(`This repo is ${payload.repository.name}`)
-    core.info(`This issue URL is ${payload.issue.url}`)
-    core.info(JSON.stringify({context, payload}))
     if (
-      github.context.eventName !== 'issue' ||
-      github.context.action !== 'opened'
+      github.context.eventName !== 'issues' ||
+      github.context.payload.action !== 'opened'
     ) {
       throw new Error('Unsupported event!')
     }
+
+    const payload = github.context.payload as IssuesOpenedEvent
+    core.info(`This repo is ${payload.repository.name}`)
+    core.info(`This issue URL is https://github.com/${payload.issue.html_url}`)
+    core.info(JSON.stringify({payload}))
 
     const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || '').split(
       '/',
