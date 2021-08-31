@@ -1,0 +1,13 @@
+name: GitHub Action Issue/Pull Hook API
+description: Calls an API with the 'url' of a GitHub Issue or Pull
+author: Jesse Rosenberger
+inputs:
+  api_url:
+    description: The API endpoint that will receive the 'url' parameter
+  bearer_token:
+    description: The 'Bearer' token for communicating with the API
+    required: true
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
