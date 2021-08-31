@@ -45,9 +45,7 @@ async function run() {
             throw new Error('Unsupported event!');
         }
         const payload = github.context.payload;
-        core.info(`This repo is ${payload.repository.name}`);
-        core.info(`This issue URL is https://github.com/${payload.issue.html_url}`);
-        core.info(JSON.stringify({ payload }));
+        core.info(`This issue URL is ${payload.issue.html_url}`);
         const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || '').split('/', 2);
         if (!envOrg || !envRepo) {
             throw new Error("Must set GITHUB_REPOSITORY in env as 'org/repo'.");
@@ -56,7 +54,7 @@ async function run() {
         const bearerToken = core.getInput('bearer_token');
         validateInput({ organization, bearerToken });
         const searchParams = new URLSearchParams();
-        searchParams.set('url', 'https://github.com/apollographql/router/issues/142');
+        searchParams.set('url', payload.issue.html_url);
         const { success } = await got_1.default
             .get('https://abernix-tagger--apollo-team-polaris-planning.netlify.app/tagger', {
             headers: {

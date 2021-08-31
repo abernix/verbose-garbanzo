@@ -29,9 +29,7 @@ async function run(): Promise<void> {
     }
 
     const payload = github.context.payload as IssuesOpenedEvent
-    core.info(`This repo is ${payload.repository.name}`)
-    core.info(`This issue URL is https://github.com/${payload.issue.html_url}`)
-    core.info(JSON.stringify({payload}))
+    core.info(`This issue URL is ${payload.issue.html_url}`)
 
     const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || '').split(
       '/',
@@ -47,10 +45,7 @@ async function run(): Promise<void> {
     validateInput({organization, bearerToken})
 
     const searchParams = new URLSearchParams()
-    searchParams.set(
-      'url',
-      'https://github.com/apollographql/router/issues/142'
-    )
+    searchParams.set('url', payload.issue.html_url)
 
     const {success} = await got
       .get(
