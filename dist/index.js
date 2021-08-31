@@ -41,16 +41,15 @@ function validateInput({ organization, bearerToken }) {
 async function run() {
     var _a;
     try {
-        if (github.context.eventName === 'issue' &&
-            github.context.action === 'opened') {
-            const payload = github.context.payload;
-            core.info(`This org is ${(_a = payload.organization) === null || _a === void 0 ? void 0 : _a.login}`);
-            core.info(`This repo is ${payload.repository.name}`);
-            core.info(`This issue URL is ${payload.issue.url}`);
-            core.info(JSON.stringify({ payload }));
-        }
-        else {
-            throw new Error('Unsupported event');
+        const context = github.context;
+        const payload = github.context.payload;
+        core.info(`This org is ${(_a = payload.organization) === null || _a === void 0 ? void 0 : _a.login}`);
+        core.info(`This repo is ${payload.repository.name}`);
+        core.info(`This issue URL is ${payload.issue.url}`);
+        core.info(JSON.stringify({ context, payload }));
+        if (github.context.eventName !== 'issue' ||
+            github.context.action !== 'opened') {
+            throw new Error('Unsupported event!');
         }
         const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || '').split('/', 2);
         if (!envOrg || !envRepo) {
