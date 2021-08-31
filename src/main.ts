@@ -28,11 +28,10 @@ async function run(): Promise<void> {
     core.info(`This issue URL is ${payload.issue.url}`)
     core.info(JSON.stringify({context, payload}))
     if (
-      github.context.eventName === 'issue' &&
-      github.context.action === 'opened'
+      github.context.eventName !== 'issue' ||
+      github.context.action !== 'opened'
     ) {
-    } else {
-      throw new Error('Unsupported event')
+      throw new Error('Unsupported event!')
     }
 
     const [envOrg, envRepo] = (process.env.GITHUB_REPOSITORY || '').split(
