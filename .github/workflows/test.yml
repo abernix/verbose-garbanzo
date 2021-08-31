@@ -22,6 +22,3 @@ jobs:
       - uses: ./
         with:
           organization: apollographql
-          project_id: 18
-          field_option_values: |2
-            J3sse==::123

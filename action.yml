@@ -2,14 +2,11 @@ name: Apollo GitHub Projects Beta Labeler
 description: Sets the project by default on new issues
 author: Jesse Rosenberger
 inputs:
+  bearer_token:
+    description: The token for communicating with the API
+    required: true
   organization:
     description: The GitHub Organization login.  Defaults to current/same.
-  project_id:
-    required: true
-    description: The GitHub Projects beta number (not ID)
-  field_option_values:
-    required: false
-    description: List of field_id::option_value_id pairs
 
 runs:
   using: 'node12'
