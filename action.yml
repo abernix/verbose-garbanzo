@@ -4,6 +4,7 @@ author: Jesse Rosenberger
 inputs:
   api_url:
     description: The API endpoint that will receive the 'url' parameter
+    required: true
   bearer_token:
     description: The 'Bearer' token for communicating with the API
     required: true
