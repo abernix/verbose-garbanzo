@@ -33,7 +33,7 @@
     "@octokit/webhooks-types": "^4.8.0",
     "@types/got": "^9.6.12",
     "@types/jest": "^27.0.2",
-    "@types/node": "^14.14.9",
+    "@types/node": "^16.10.2",
     "@vercel/ncc": "^0.31.1",
     "jest": "^27.1.0",
     "jest-circus": "^27.1.0",
