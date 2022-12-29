@@ -8,7 +8,8 @@ describe('test runs', () => {
   test('issues', () => {
     const payloadPath = resolve(__dirname, '../payload-issue.json')
     const env = {
-      INPUT_API_URL: 'https://webhook.site/f636ed30-e72e-4996-881e-f76efcfe67c3',
+      INPUT_API_URL:
+        'https://webhook.site/f636ed30-e72e-4996-881e-f76efcfe67c3',
       INPUT_BEARER_TOKEN: '123abc',
       GITHUB_EVENT_NAME: 'issues',
       GITHUB_EVENT_PATH: payloadPath
