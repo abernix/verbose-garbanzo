@@ -19,10 +19,10 @@ function validateInput({apiUrl, bearerToken}: MainInputs): void {
 async function run(): Promise<void> {
   try {
     if (
-      github.context.eventName !== 'issues' ||
+      !['issues', 'pull_request'].includes(github.context.eventName) ||
       github.context.payload.action !== 'opened'
     ) {
-      throw new Error('Unsupported event!')
+      throw new Error(`Unsupported event ${github.context.eventName} / ${github.context.payload.action}!`)
     }
 
     const payload = github.context.payload as IssuesOpenedEvent

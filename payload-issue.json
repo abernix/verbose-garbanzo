@@ -1,0 +1,9 @@
+{
+  "inputs": {
+    "api_url": "https://webhook.site/f636ed30-e72e-4996-881e-f76efcfe67c3"
+  },
+  "action": "opened",
+  "issue": {
+    "html_url": "http://test"
+  }
+}
