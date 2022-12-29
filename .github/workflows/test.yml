@@ -7,7 +7,7 @@ on: # rebuild any PRs and main branch changes
       - 'releases/*'
 
 jobs:
-  build: # make sure build/ci work properly
+  build_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,7 +15,3 @@ jobs:
           npm install
       - run: |
           npm run all
-      - uses: ./
-        with:
-          api_url: https://webhook.site/f636ed30-e72e-4996-881e-f76efcfe67c3
-          bearer_token: 123abc
