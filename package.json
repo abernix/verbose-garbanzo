@@ -26,7 +26,7 @@
   "dependencies": {
     "@actions/core": "1.9.1",
     "@actions/github": "5.1.0",
-    "got": "11.8.6",
+    "got": "12.5.3",
     "octokit": "1.8.1"
   },
   "devDependencies": {
