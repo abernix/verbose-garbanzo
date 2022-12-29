@@ -51,7 +51,7 @@ async function run(): Promise<void> {
     const searchParams = new URLSearchParams()
     searchParams.set('url', htmlUrl)
 
-    const {success} = await got
+    const {success}: { success?: boolean } = await got
       .get(apiUrl, {
         headers: {
           authorization: `Bearer ${bearerToken}`
