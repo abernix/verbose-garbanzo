@@ -21,4 +21,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          organization: apollographql
+          api_url: https://webhook.site/f636ed30-e72e-4996-881e-f76efcfe67c3
+          bearer_token: 123abc
