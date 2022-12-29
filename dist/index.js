@@ -42,18 +42,26 @@ function validateInput({ apiUrl, bearerToken }) {
     assert_1.default.ok(typeof bearerToken === 'string' && bearerToken, 'bearer_token must be set');
 }
 async function run() {
+    var _a, _b;
     try {
         if (!['issues', 'pull_request'].includes(github.context.eventName) ||
-            !['opened', 'reopened'].includes(github.context.payload.action || "")) {
+            !['opened', 'reopened'].includes(github.context.payload.action || '')) {
             throw new Error(`Unsupported event ${github.context.eventName} / ${github.context.payload.action}!`);
         }
-        const payload = github.context.payload;
-        core.info(`This issue URL is ${payload.issue.html_url}`);
+        let htmlUrl;
+        if (github.context.eventName === 'pull_request') {
+            htmlUrl = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.html_url;
+        }
+        else {
+            htmlUrl = (_b = github.context.payload.issue) === null || _b === void 0 ? void 0 : _b.html_url;
+        }
+        assert_1.default.ok(typeof htmlUrl === 'string' && htmlUrl, 'html_url must be present on event payload');
+        core.info(`This issue URL is ${htmlUrl}`);
         const apiUrl = core.getInput('api_url');
         const bearerToken = core.getInput('bearer_token');
         validateInput({ apiUrl, bearerToken });
         const searchParams = new URLSearchParams();
-        searchParams.set('url', payload.issue.html_url);
+        searchParams.set('url', htmlUrl);
         const { success } = await got_1.default
             .get(apiUrl, {
             headers: {
