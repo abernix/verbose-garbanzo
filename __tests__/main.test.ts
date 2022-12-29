@@ -2,10 +2,6 @@ import * as process from 'process'
 import * as cp from 'child_process'
 import * as path from 'path'
 import {resolve} from 'path'
-import express, {RequestParamHandler, type Express} from 'express'
-import type {Server} from 'http'
-import { ok } from "assert";
-import { AddressInfo } from "net";
 
 // shows how the runner will run a javascript action with env / stdout protocol
 describe('test runs', () => {
